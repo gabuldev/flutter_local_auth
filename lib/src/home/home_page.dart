@@ -48,6 +48,9 @@ class _HomePageState extends State<HomePage> {
           children: controller.biometrics.value
               .map((e) => ListTile(
                     title: Text(e.index.toString()),
+                    onTap: () {
+                      controller.didAuthenticate();
+                    },
                   ))
               .toList(),
         ),
