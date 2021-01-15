@@ -9,14 +9,31 @@ class HomePage extends StatefulWidget {
   _HomePageState createState() => _HomePageState();
 }
 
+extension RxNotifierExt<T> on RxNotifier<T> {
+  bool compare(T a) => a == this.value;
+}
+
 class _HomePageState extends State<HomePage> {
   final controller = HomeController();
+  final _key = GlobalKey<ScaffoldState>();
   RxDisposer disposer;
   @override
   void initState() {
     disposer = rxObserver(() {
       if (controller.check.value == true) {
         controller.getBiometrics();
+      }
+      if (controller.status.compare(Status.awaiting)) {
+        _key.currentState.showBottomSheet((context) => BottomSheet(
+            onClosing: () {},
+            builder: (context) => Material(
+                  child: RxBuilder(
+                      builder: (context) => Container(
+                          height: 300,
+                          child: Text(
+                            controller.status.toString(),
+                          ))),
+                )));
       }
     });
     super.initState();
@@ -31,6 +48,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      key: _key,
       appBar: AppBar(
         title: Text("Local Auth"),
       ),
